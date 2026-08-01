@@ -9,7 +9,8 @@ Open-source projects increasingly ship screenshots, short videos, generated imag
 ## Install and run
 
 ```bash
-python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets
+python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --summary
+python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --missing-only --summary
 python -m unittest discover -s tests
 ```
 
@@ -19,7 +20,8 @@ python -m unittest discover -s tests
 {
   "assets": [
     {"path": "Demo Shot.PNG", "status": "missing_license_marker", "suggested_filename": "demo-shot--license-needed.png"}
-  ]
+  ],
+  "summary": {"total_assets": 1, "missing_license_markers": 1, "ok": 0}
 }
 ```
 

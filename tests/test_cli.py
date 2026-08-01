@@ -1,8 +1,10 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from local_media_asset_license_filename_auditor_20260801.cli import audit
+from local_media_asset_license_filename_auditor_20260801.cli import audit, main, summarize
 
 
 class AuditTests(unittest.TestCase):
@@ -20,6 +22,26 @@ class AuditTests(unittest.TestCase):
             (root / 'clip.mp4').write_bytes(b'x')
             (root / 'clip.mp4.json').write_text('{"license":"CC-BY"}', encoding='utf-8')
             self.assertEqual(audit(root)[0]['status'], 'ok')
+
+    def test_missing_only_filters_ok_assets_and_summary_counts_filtered_rows(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'clip.mp4').write_bytes(b'x')
+            (root / 'clip.mp4.json').write_text('{"license":"CC-BY"}', encoding='utf-8')
+            (root / 'Demo Shot.PNG').write_bytes(b'x')
+            rows = audit(root, include_ok=False)
+        self.assertEqual([row['path'] for row in rows], ['Demo Shot.PNG'])
+        self.assertEqual(summarize(rows), {'total_assets': 1, 'missing_license_markers': 1, 'ok': 0})
+
+    def test_main_can_emit_summary(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'Demo Shot.PNG').write_bytes(b'x')
+            with patch('builtins.print') as mocked_print:
+                main([str(root), '--summary'])
+        payload = json.loads(mocked_print.call_args.args[0])
+        self.assertEqual(payload['summary']['total_assets'], 1)
+        self.assertEqual(payload['summary']['missing_license_markers'], 1)
 
 
 if __name__ == '__main__':
