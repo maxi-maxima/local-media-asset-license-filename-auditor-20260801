@@ -1,0 +1,11 @@
+[project]
+name = "local-media-asset-license-filename-auditor-20260801"
+version = "0.1.0"
+description = "Audit local media filenames and sidecars for missing license and provenance markers."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "maxi-maxima"}]
+
+[project.scripts]
+local-media-asset-license-filename-auditor-20260801 = "local_media_asset_license_filename_auditor_20260801.cli:main"
