@@ -43,13 +43,17 @@ def main(argv=None):
     ap.add_argument('directory')
     ap.add_argument('--summary', action='store_true', help='include aggregate asset counts in the JSON output')
     ap.add_argument('--missing-only', action='store_true', help='omit assets that already have a license/provenance marker')
+    ap.add_argument('--fail-on-missing', action='store_true', help='exit with status 1 when any asset lacks a license/provenance marker')
     ns = ap.parse_args(argv)
     rows = audit(ns.directory, include_ok=not ns.missing_only)
     payload = {'assets': rows}
     if ns.summary:
         payload['summary'] = summarize(rows)
     print(json.dumps(payload, indent=2))
+    if ns.fail_on_missing and any(row['status'] == 'missing_license_marker' for row in rows):
+        return 1
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

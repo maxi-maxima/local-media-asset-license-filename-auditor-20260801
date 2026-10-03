@@ -11,8 +11,11 @@ Open-source projects increasingly ship screenshots, short videos, generated imag
 ```bash
 python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --summary
 python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --missing-only --summary
+python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --fail-on-missing
 python -m unittest discover -s tests
 ```
+
+Use `--fail-on-missing` in release or CI jobs. The command still emits the JSON report, then exits with status 1 when any audited asset lacks a license/provenance marker.
 
 ## Example
 
@@ -29,4 +32,3 @@ python -m unittest discover -s tests
 
 - Optional safe rename mode
 - SPDX-style sidecar templates
-- Release archive gate for CI

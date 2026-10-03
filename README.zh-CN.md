@@ -11,8 +11,11 @@ AI 生成演示和内容工具会产生大量图片、音频、视频素材。�
 ```bash
 python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --summary
 python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --missing-only --summary
+python -m local_media_asset_license_filename_auditor_20260801.cli examples/assets --fail-on-missing
 python -m unittest discover -s tests
 ```
+
+在发布或 CI 任务中使用 `--fail-on-missing`。命令仍会输出 JSON 报告；只要审计到缺少许可/来源标记的素材，就以状态码 1 退出。
 
 ## 示例
 
@@ -29,4 +32,3 @@ python -m unittest discover -s tests
 
 - 可选安全重命名模式
 - SPDX 风格 sidecar 模板
-- CI 发布包门禁

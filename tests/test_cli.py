@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -42,6 +44,35 @@ class AuditTests(unittest.TestCase):
         payload = json.loads(mocked_print.call_args.args[0])
         self.assertEqual(payload['summary']['total_assets'], 1)
         self.assertEqual(payload['summary']['missing_license_markers'], 1)
+
+    def test_fail_on_missing_sets_process_exit_code(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'Demo Shot.PNG').write_bytes(b'x')
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    '-m',
+                    'local_media_asset_license_filename_auditor_20260801.cli',
+                    str(root),
+                    '--fail-on-missing',
+                    '--summary',
+                ],
+                cwd=Path(__file__).resolve().parents[1],
+                text=True,
+                capture_output=True,
+            )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['summary']['missing_license_markers'], 1)
+
+    def test_fail_on_missing_allows_licensed_assets(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'clip.mp4').write_bytes(b'x')
+            (root / 'clip.mp4.json').write_text('{"license":"CC-BY"}', encoding='utf-8')
+            with patch('builtins.print'):
+                exit_code = main([str(root), '--fail-on-missing'])
+        self.assertEqual(exit_code, 0)
 
 
 if __name__ == '__main__':
