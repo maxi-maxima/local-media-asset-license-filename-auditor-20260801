@@ -16,6 +16,7 @@ python -m unittest discover -s tests
 ```
 
 Use `--fail-on-missing` in release or CI jobs. The command still emits the JSON report, then exits with status 1 when any audited asset lacks a license/provenance marker.
+Invalid or missing target directories exit with status 2 instead of producing an empty passing report.
 
 ## Example
 

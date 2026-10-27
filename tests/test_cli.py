@@ -74,6 +74,28 @@ class AuditTests(unittest.TestCase):
                 exit_code = main([str(root), '--fail-on-missing'])
         self.assertEqual(exit_code, 0)
 
+    def test_cli_rejects_missing_or_non_directory_targets(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            file_target = root / 'asset.png'
+            file_target.write_bytes(b'x')
+            for target in (root / 'missing', file_target):
+                with self.subTest(target=target):
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            '-m',
+                            'local_media_asset_license_filename_auditor_20260801.cli',
+                            str(target),
+                            '--fail-on-missing',
+                        ],
+                        cwd=Path(__file__).resolve().parents[1],
+                        text=True,
+                        capture_output=True,
+                    )
+                    self.assertEqual(result.returncode, 2)
+                    self.assertIn('directory does not exist or is not a directory', result.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()

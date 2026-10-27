@@ -45,7 +45,10 @@ def main(argv=None):
     ap.add_argument('--missing-only', action='store_true', help='omit assets that already have a license/provenance marker')
     ap.add_argument('--fail-on-missing', action='store_true', help='exit with status 1 when any asset lacks a license/provenance marker')
     ns = ap.parse_args(argv)
-    rows = audit(ns.directory, include_ok=not ns.missing_only)
+    directory = Path(ns.directory)
+    if not directory.is_dir():
+        ap.error(f'directory does not exist or is not a directory: {ns.directory}')
+    rows = audit(directory, include_ok=not ns.missing_only)
     payload = {'assets': rows}
     if ns.summary:
         payload['summary'] = summarize(rows)

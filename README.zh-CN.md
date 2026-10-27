@@ -16,6 +16,7 @@ python -m unittest discover -s tests
 ```
 
 在发布或 CI 任务中使用 `--fail-on-missing`。命令仍会输出 JSON 报告；只要审计到缺少许可/来源标记的素材，就以状态码 1 退出。
+目标目录不存在或不是目录时会以状态码 2 退出，不再生成误导性的空报告。
 
 ## 示例
 
