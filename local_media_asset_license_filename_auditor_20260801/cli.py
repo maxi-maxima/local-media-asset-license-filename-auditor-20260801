@@ -13,7 +13,7 @@ def audit(root, *, include_ok=True):
     for p in sorted(root.rglob('*')):
         if p.is_file() and p.suffix.lower() in MEDIA:
             sidecars = [p.with_suffix(p.suffix + '.json'), p.with_suffix('.license'), p.with_suffix('.txt')]
-            side = ' '.join(s.read_text(encoding='utf-8', errors='ignore') for s in sidecars if s.exists())
+            side = ' '.join(s.read_text(encoding='utf-8', errors='ignore') for s in sidecars if s.is_file())
             hay = p.name + ' ' + side
             ok = bool(LICENSE_WORDS.search(hay))
             if ok and not include_ok:

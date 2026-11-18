@@ -25,6 +25,13 @@ class AuditTests(unittest.TestCase):
             (root / 'clip.mp4.json').write_text('{"license":"CC-BY"}', encoding='utf-8')
             self.assertEqual(audit(root)[0]['status'], 'ok')
 
+    def test_ignores_sidecar_directories(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'clip.png').write_bytes(b'x')
+            (root / 'clip.license').mkdir()
+            self.assertEqual(audit(root)[0]['status'], 'missing_license_marker')
+
     def test_missing_only_filters_ok_assets_and_summary_counts_filtered_rows(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
